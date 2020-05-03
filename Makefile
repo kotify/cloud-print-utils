@@ -42,7 +42,7 @@ stack.deploy.weasyprint:
 	cdk deploy --app ./cdk-stacks/bin/app.js --stack WeasyPrintStack --parameters uploadBucketName=${BUCKET}
 
 test.weasyprint:
-	docker run --rm  -it \
+	docker run --rm \
 	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
 	    -e XDG_DATA_DIRS="/opt/lib" \
