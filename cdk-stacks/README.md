@@ -1,13 +1,37 @@
-# Example CDK Stack
+# Infrastructure as Code example
 
-This is an example app that you can use to deploy aws stacks.
-Stack defined in `lib/`, app defined in `bin/`.
+We use [CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html) to deploy stack, thus you need nodejs installed to run it.
 
-## Useful commands
+Each stack consist of printer lambda function, layer and s3 bucket where files are stored.
+You must build layer before running deploy.
 
-- `npm run build` compile typescript to js
-- `npm run watch` watch for changes and compile
-- `npm run test` perform the jest unit tests
-- `cdk deploy` deploy this stack to your default AWS account/region
-- `cdk diff` compare deployed stack with current state
-- `cdk synth` emits the synthesized CloudFormation template
+We provide two stacks `WeasyPrintStack` and `WkhtmltoxStack`, below is deployment
+example of WeasyPrintStack.
+
+**WARNING** review code before deployment.
+
+    # build (rebuild must be done on every change in typescript files)
+    $ cd cdk-stacks && npm install && npm run build
+
+    # view diff WeasyPrintStack
+    $ npm run cdk diff WeasyPrintStack
+
+    # deploy WeasyPrintStack
+    $ npm run cdk deploy WeasyPrintStack --parameters uploadBucketName=<bucket name>
+
+    # generate synthesized CloudFormation template
+    $ npm run cdk synth WeasyPrintStack
+
+To test your deployment:
+
+    # invoke function
+    $ aws lambda invoke --function-name cloud-print \
+        --payload '{"url": "https://weasyprint.org/samples/report/report.html", "filename": "report.pdf"}' \
+        --log-type Tail --query 'LogResult' --output text out | base64 -d
+
+    # view output
+    $ cat out
+    {"statusCode": 200, "body": "https://your-bucket.s3.amazonaws.com/report.pdf?signature..."}
+
+    # open in browser
+    $ chromium-browser $(cat out | jq .body | tr -d '"')

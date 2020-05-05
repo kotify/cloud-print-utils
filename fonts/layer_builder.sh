@@ -3,10 +3,11 @@
 set -e
 yum install -y yum-utils rpmdevtools
 cd /tmp
+# download fonts
 yumdownloader \
     dejavu-sans-fonts \
     dejavu-fonts-common \
-    xorg-x11-fonts-Type1
+    xorg-x11-fonts-Type1 $@
 
 rpmdev-extract *rpm
 
