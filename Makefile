@@ -20,9 +20,10 @@ build/weasyprint-layer-$(RUNTIME).zip: weasyprint/layer_builder.sh \
 
 build/fonts-layer.zip: fonts/layer_builder.sh | _build
 	docker run --rm \
+	    -e INSTALL_MS_FONTS="${INSTALL_MS_FONTS}" \
 	    -v `pwd`/fonts:/out \
 	    -t lambci/lambda:build-${RUNTIME} \
-	    bash /out/layer_builder.sh ${EXTRA_FONTS}
+	    bash /out/layer_builder.sh
 	mv -f ./fonts/layer.zip $@
 
 stack.diff:

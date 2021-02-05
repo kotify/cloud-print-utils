@@ -11,13 +11,7 @@ Currently solutions based on these tools available:
 To build a layer you need **make** and **docker** installed on your system.
 The layers support only amazon linux 2 runtimes, eg. python3.8, nodejs12.x.
 
-By default only minimal subset of system fonts [installed](fonts/layer_builder.sh) if you need more fonts
-set `EXTRA_FONTS` env variable with space separated list
-of font packages to install, eg:
-
-    EXTRA_FONTS="liberation-fonts xorg-x11-fonts-cyrillic" make build/weasyprint-layer-python3.8.zip
-
-You can search for available font packages with `make fonts.list`.
+By default only dejavu fonts are installed, edit [build script](fonts/layer_builder.sh) to install others.
 
 ## WeasyPrint
 
