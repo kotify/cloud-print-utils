@@ -7,9 +7,9 @@ cd /tmp
 yumdownloader \
     dejavu-sans-fonts \
     dejavu-fonts-common \
-    xorg-x11-fonts-Type1 $@
+    xorg-x11-fonts-Type1 "$@"
 
-rpmdev-extract *rpm
+rpmdev-extract -- *rpm
 
 mkdir /opt/fonts
 cp -P -r /tmp/*/usr/share/fonts/* /opt/fonts

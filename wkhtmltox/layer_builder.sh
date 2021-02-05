@@ -17,7 +17,7 @@ yumdownloader --resolve \
     expat.x86_64 \
     libuuid.x86_64 \
 
-rpmdev-extract *rpm
+rpmdev-extract -- *rpm
 mkdir /opt/lib
 cp -P -r /tmp/*/usr/lib64/* /opt/lib/
 
