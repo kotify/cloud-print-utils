@@ -27,7 +27,7 @@ Environment variables expected by layer:
 
 ## Lambda Function
 
-Simple lambda function [provided](weasyprint/lambda_function.py),
+Simple lambda function [provided](./lambda_function.py),
 it requires `BUCKET=<bucket name>` env variable if files stored on s3.
 
 Example payload to print pdf from url and return link to s3:

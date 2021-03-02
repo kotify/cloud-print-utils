@@ -23,7 +23,7 @@ Deploy layer:
 
 ## Lambda Function
 
-Simple lambda function [provided](wkhtmltox/lambda_function.py),
+Simple lambda function [provided](./lambda_function.py),
 it requires `BUCKET=<bucket name>` env variable if files stored on s3.
 
 Example payload to print grayscaled pdf from url and return content encoded in base64:
