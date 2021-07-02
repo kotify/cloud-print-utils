@@ -36,4 +36,4 @@ Example payload to print pdf from url and return link to s3:
 
 Example paylod to print png from html and css data and return png content encoded in base64:
 
-    {"html": "<html><h1>Header</h1></html>", "css": ["h1 { color: red }"], "filename": "report.png", "return": "base64"}
+    {"html": "<html><h1>Header</h1></html>", "css": "h1 { color: red }", "filename": "report.png", "return": "base64"}
