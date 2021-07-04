@@ -19,7 +19,7 @@ rpmdev-extract -- *rpm
 mkdir /opt/lib
 cp -P -r /tmp/*/usr/lib64/* /opt/lib/
 
-curl -LO "https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/$VERSION/wkhtmltox-$VERSION.centos7.x86_64.rpm"
+curl -LO "https://github.com/wkhtmltopdf/packaging/releases/download/$VERSION/wkhtmltox-$VERSION.centos7.x86_64.rpm"
 rpmdev-extract wkhtmltox-*rpm
 mkdir /opt/bin
 cp /tmp/*/usr/local/bin/wkhtmlto* /opt/bin/
