@@ -1,5 +1,7 @@
 # WeasyPrint AWS Lambda
 
+**WARNING** WeasyPrint pinned to v52 until amazon linux has pango updated to v1.44, as a workaround you can pack and run your lambda function as a [docker container](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html).
+
 ## Lambda Layer
 
 Build layer:
