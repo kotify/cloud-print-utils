@@ -1,5 +1,6 @@
 RUNTIME ?= python3.8
 TEST_FILENAME ?= report.pdf
+DOCKER_RUN = docker run --rm --platform linux/amd64
 
 .PHONY: stack.deploy.weasyprint clean test.weasyprint
 
@@ -8,9 +9,9 @@ all: build/weasyprint-layer-$(RUNTIME).zip build/wkhtmltopdf-layer.zip
 build/weasyprint-layer-$(RUNTIME).zip: weasyprint/layer_builder.sh \
     build/fonts-layer.zip \
     | _build
-	docker run --rm \
+	${DOCKER_RUN} \
 	    -v `pwd`/weasyprint:/out \
-	    -t lambci/lambda:build-${RUNTIME} \
+	    -t public.ecr.aws/sam/build-${RUNTIME}:latest \
 	    bash /out/layer_builder.sh
 	mv -f ./weasyprint/layer.zip ./build/weasyprint-no-fonts-layer.zip
 	cd build && rm -rf ./opt && mkdir opt \
@@ -19,10 +20,10 @@ build/weasyprint-layer-$(RUNTIME).zip: weasyprint/layer_builder.sh \
 	    && cd opt && zip -r9 ../weasyprint-layer-${RUNTIME}.zip .
 
 build/fonts-layer.zip: fonts/layer_builder.sh | _build
-	docker run --rm \
+	${DOCKER_RUN} \
 	    -e INSTALL_MS_FONTS="${INSTALL_MS_FONTS}" \
 	    -v `pwd`/fonts:/out \
-	    -t lambci/lambda:build-${RUNTIME} \
+	    -t public.ecr.aws/sam/build-${RUNTIME}:latest \
 	    bash /out/layer_builder.sh
 	mv -f ./fonts/layer.zip $@
 
@@ -35,7 +36,7 @@ stack.deploy:
 	cdk deploy --app ./cdk-stacks/bin/app.js --stack PrintStack --parameters uploadBucketName=${BUCKET}
 
 test.weasyprint:
-	docker run --rm \
+	${DOCKER_RUN} \
 	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
 	    -e XDG_DATA_DIRS="/opt/lib" \
@@ -51,9 +52,9 @@ test.weasyprint:
 build/wkhtmltox-layer.zip: wkhtmltox/layer_builder.sh \
     build/fonts-layer.zip \
     | _build
-	docker run --rm \
+	${DOCKER_RUN} \
 	    -v `pwd`/wkhtmltox:/out \
-	    -t lambci/lambda:build-${RUNTIME} \
+	    -t public.ecr.aws/sam/build-${RUNTIME}:latest \
 	    bash /out/layer_builder.sh
 	mv -f ./wkhtmltox/layer.zip ./build/wkhtmltox-no-fonts-layer.zip
 	cd build && rm -rf ./opt && mkdir opt \
@@ -70,7 +71,7 @@ build/wkhtmltoimage-layer.zip: build/wkhtmltox-layer.zip
 	zip -d $@ "bin/wkhtmltopdf"
 
 test.wkhtmltox:
-	docker run --rm \
+	${DOCKER_RUN} \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
 	    -v `pwd`/wkhtmltox:/var/task \
 	    -v `pwd`/build/opt:/opt \
@@ -88,5 +89,5 @@ clean:
 	rm -rf ./build
 
 fonts.list:
-	docker run --rm lambci/lambda:build-${RUNTIME} \
+	${DOCKER_RUN} public.ecr.aws/sam/build-${RUNTIME}:latest \
 	    bash -c "yum search font | grep noarch | grep -v texlive"
