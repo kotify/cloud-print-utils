@@ -9,7 +9,7 @@ build/weasyprint-layer-$(RUNTIME).zip: weasyprint/layer_builder.sh \
     build/fonts-layer.zip \
     | _build
 	docker run --rm \
-	    -v `pwd`/weasyprint:/out \
+	    -v "`pwd`/weasyprint:/out" \
 	    -t lambci/lambda:build-${RUNTIME} \
 	    bash /out/layer_builder.sh
 	mv -f ./weasyprint/layer.zip ./build/weasyprint-no-fonts-layer.zip
@@ -21,7 +21,7 @@ build/weasyprint-layer-$(RUNTIME).zip: weasyprint/layer_builder.sh \
 build/fonts-layer.zip: fonts/layer_builder.sh | _build
 	docker run --rm \
 	    -e INSTALL_MS_FONTS="${INSTALL_MS_FONTS}" \
-	    -v `pwd`/fonts:/out \
+	    -v "`pwd`/fonts:/out" \
 	    -t lambci/lambda:build-${RUNTIME} \
 	    bash /out/layer_builder.sh
 	mv -f ./fonts/layer.zip $@
@@ -39,8 +39,8 @@ test.weasyprint:
 	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
 	    -e XDG_DATA_DIRS="/opt/lib" \
-	    -v `pwd`/weasyprint:/var/task \
-	    -v `pwd`/build/opt:/opt \
+	    -v "`pwd`/weasyprint:/var/task" \
+	    -v "`pwd`/build/opt:/opt" \
 	    lambci/lambda:${RUNTIME} \
 	    lambda_function.lambda_handler \
 	    '{"url": "https://weasyprint.org/samples/report/report.html", "filename": "${TEST_FILENAME}", "return": "base64"}' \
@@ -52,7 +52,7 @@ build/wkhtmltox-layer.zip: wkhtmltox/layer_builder.sh \
     build/fonts-layer.zip \
     | _build
 	docker run --rm \
-	    -v `pwd`/wkhtmltox:/out \
+	    -v "`pwd`/wkhtmltox:/out" \
 	    -t lambci/lambda:build-${RUNTIME} \
 	    bash /out/layer_builder.sh
 	mv -f ./wkhtmltox/layer.zip ./build/wkhtmltox-no-fonts-layer.zip
@@ -72,8 +72,8 @@ build/wkhtmltoimage-layer.zip: build/wkhtmltox-layer.zip
 test.wkhtmltox:
 	docker run --rm \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
-	    -v `pwd`/wkhtmltox:/var/task \
-	    -v `pwd`/build/opt:/opt \
+	    -v "`pwd`/wkhtmltox:/var/task" \
+	    -v "`pwd`/build/opt:/opt" \
 	    lambci/lambda:${RUNTIME} \
 	    lambda_function.lambda_handler \
 	    '{"args": "https://google.com", "filename": "${TEST_FILENAME}", "return": "base64"}' \
