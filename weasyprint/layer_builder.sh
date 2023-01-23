@@ -33,7 +33,7 @@ cp -r /usr/share/mime /opt/lib/mime
 RUNTIME=$(echo "$AWS_EXECUTION_ENV" | cut -d _ -f 3)
 export RUNTIME
 mkdir -p "/opt/python/lib/$RUNTIME/site-packages"
-python -m pip install "weasyprint<53.0" -t "/opt/python/lib/$RUNTIME/site-packages"
+python -m pip install "weasyprint>=52.2" -t "/opt/python/lib/$RUNTIME/site-packages"
 
 cd /opt
 zip -r9 /out/layer.zip lib/* python/*
