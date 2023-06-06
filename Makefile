@@ -43,7 +43,7 @@ test.weasyprint:
 	    -v `pwd`/build/opt:/opt \
 	    lambci/lambda:${RUNTIME} \
 	    lambda_function.lambda_handler \
-	    '{"url": "https://weasyprint.org/samples/report/report.html", "filename": "${TEST_FILENAME}", "return": "base64"}' \
+	    '{"url": "https://kotify.github.io/cloud-print-utils/samples/report/", "filename": "${TEST_FILENAME}", "return": "base64"}' \
 	    | tail -1 | jq .body | tr -d '"' | base64 -d > ${TEST_FILENAME}
 	@echo "Check ./${TEST_FILENAME}, eg.: xdg-open ${TEST_FILENAME}"
 

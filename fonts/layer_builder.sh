@@ -1,6 +1,8 @@
 #!/bin/bash
 # don't fortget to set FONTCONFIG_PATH="/opt/fonts" in your lambda
 set -e
+
+yum upgrade -y ca-certificates
 yum install -y yum-utils rpmdevtools
 cd /tmp
 # download fonts
