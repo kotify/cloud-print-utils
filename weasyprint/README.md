@@ -48,8 +48,8 @@ it requires `BUCKET=<bucket name>` env variable if files stored on s3.
 
 Example payload to print pdf from url and return link to s3:
 
-    {"url": "https://weasyprint.org/samples/report/report.html", "filename": "report.pdf"}
+    {"url": "https://kotify.github.io/cloud-print-utils/samples/report/", "filename": "report.pdf"}
 
-Example paylod to print png from html and css data and return png content encoded in base64:
+Example paylod to print pdf from html and css data and return pdf content encoded in base64:
 
-    {"html": "<html><h1>Header</h1></html>", "css": "h1 { color: red }", "filename": "report.png", "return": "base64"}
+    {"html": "<html><h1>Header</h1></html>", "css": "h1 { color: red }", "filename": "report.pdf", "return": "base64"}
