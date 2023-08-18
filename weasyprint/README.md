@@ -2,38 +2,16 @@
 
 **WARNING** Native lambda layer can run only legacy WeasyPrint v52, as a workaround you can run your lambda function as a [docker container](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html).
 
-## Native Lambda Layer
-
-Build layer:
-
-    $ make build/weasyprint-layer-python3.8.zip
-
-    # to test your build run
-    $ make test.weasyprint
-
-Deploy layer:
-
-    $ aws lambda publish-layer-version \
-        --region <region> \
-        --layer-name <name> \
-        --zip-file fileb://build/weasyprint-layer-python3.8.zip
-
-Environment variables expected by layer:
-
-    GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache"
-    FONTCONFIG_PATH="/opt/fonts"
-    XDG_DATA_DIRS="/opt/lib"
-
-For python3.9 use instructions: https://github.com/kotify/cloud-print-utils/issues/10#issuecomment-1367774956
-
 ## Docker Lambda
 
-Build layer:
+Build Image:
 
     $ cd weasyprint
     $ make build
 
-Test layer:
+You can choose to build your image for linux/amd64 (default) or linux/arm64 (update the PLATFORM variable in Makefile)
+
+Test Image:
 
     $ make run
 

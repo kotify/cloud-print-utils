@@ -13,9 +13,6 @@ def lambda_handler(event, context):
     if ext == ".pdf":
         content_type = "application/pdf"
         method = "write_pdf"
-    elif ext == ".png":
-        content_type = "image/png"
-        method = "write_png"
     else:
         raise ValueError("File extension {ext} is not supported.")
     if "url" in event:

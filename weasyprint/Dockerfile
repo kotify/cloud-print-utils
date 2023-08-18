@@ -20,7 +20,7 @@ RUN apk add --no-cache \
     automake \
     elfutils-dev \
     make \
-    cmake 
+    cmake
 # Include global args in this stage of the build
 ARG FUNCTION_DIR
 ARG RUNTIME_VERSION
@@ -47,6 +47,9 @@ COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
 RUN apk add --no-cache pango zlib-dev jpeg-dev openjpeg-dev libffi-dev
 RUN apk add --no-cache msttcorefonts-installer && update-ms-fonts
+# (Optional) To add more fonts check the available one from the list below:
+# https://wiki.alpinelinux.org/wiki/Fonts
+# RUN apk add --no-cache whatever-font
 RUN fc-cache --really-force --verbose
 # (Optional) Add Lambda Runtime Interface Emulator and use a script in the ENTRYPOINT for simpler local runs
 # ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie /usr/bin/aws-lambda-rie
