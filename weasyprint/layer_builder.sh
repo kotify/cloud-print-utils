@@ -3,18 +3,30 @@
 # GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache"
 # XDG_DATA_DIRS="/opt/lib"
 set -e
-yum install -y yum-utils rpmdevtools
+dnf install -y rpmdevtools
 cd /tmp
-yumdownloader --resolve \
-    cairo.x86_64 \
-    gdk-pixbuf2.x86_64 \
-    libffi.x86_64 \
-    pango.x86_64 \
-    expat.x86_64 \
-    libmount.x86_64 \
-    libuuid.x86_64 \
-    libblkid.x86_64 \
-    glib2.x86_64 \
+dnf download cairo
+dnf download gdk-pixbuf2
+dnf download libffi
+dnf download pango
+dnf download expat
+dnf download libmount
+dnf download libuuid
+dnf download libblkid
+dnf download glib2
+dnf download libthai
+dnf download fribidi
+dnf download harfbuzz
+dnf download libdatrie
+dnf download freetype
+dnf download graphite2
+dnf download libbrotli
+dnf download libpng
+dnf download fontconfig
+
+# pixbuf need mime database
+# https://www.linuxtopia.org/online_books/linux_desktop_guides/gnome_2.14_admin_guide/mimetypes-database.html
+dnf download shared-mime-info
 
 rpmdev-extract -- *rpm
 
@@ -26,14 +38,11 @@ PIXBUF_BIN=$(find /tmp -name gdk-pixbuf-query-loaders-64)
 GDK_PIXBUF_MODULEDIR=$(find /opt/lib/gdk-pixbuf-2.0/ -name loaders)
 export GDK_PIXBUF_MODULEDIR
 $PIXBUF_BIN > /opt/lib/loaders.cache
-# pixbuf need mime database
-# https://www.linuxtopia.org/online_books/linux_desktop_guides/gnome_2.14_admin_guide/mimetypes-database.html
-cp -r /usr/share/mime /opt/lib/mime
 
-RUNTIME=$(echo "$AWS_EXECUTION_ENV" | cut -d _ -f 3)
+RUNTIME=$(grep AWS_EXECUTION_ENV "$LAMBDA_RUNTIME_DIR/bootstrap" | cut -d _ -f 5)
 export RUNTIME
 mkdir -p "/opt/python/lib/$RUNTIME/site-packages"
-python -m pip install "weasyprint<53.0" -t "/opt/python/lib/$RUNTIME/site-packages"
+python -m pip install "weasyprint" -t "/opt/python/lib/$RUNTIME/site-packages"
 
 cd /opt
 zip -r9 /out/layer.zip lib/* python/*

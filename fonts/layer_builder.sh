@@ -2,13 +2,13 @@
 # don't fortget to set FONTCONFIG_PATH="/opt/fonts" in your lambda
 set -e
 
-yum upgrade -y ca-certificates
-yum install -y yum-utils rpmdevtools
+dnf install -y rpmdevtools
+
 cd /tmp
 # download fonts
-yumdownloader \
-    dejavu-sans-fonts \
-    dejavu-fonts-common
+dnf download dejavu-sans-fonts
+dnf download dejavu-serif-fonts
+dnf download dejavu-sans-mono-fonts
 
 rpmdev-extract -- *rpm
 
