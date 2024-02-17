@@ -5,39 +5,51 @@ jobs:
   weasyprint-build:
     name: Build WeasyPrint
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]') "
     steps:
-      - uses: actions/checkout@v2
-      - name: Build weasyprint
-        run: |
-          make build/weasyprint-layer-python3.12.zip
+      - uses: actions/checkout@v4
+      - name: Build Layer 
+        run: make build/weasyprint-layer-python3.12.zip
       - name: Test weasyprint
         run: |
           mkdir output
           make test.start.container &
           sleep 1
           TEST_FILENAME=output/report.pdf make test.print.report
-      - name: Upload pdf
-        uses: actions/upload-artifact@v1
+          rm -rf build/opt
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
         with:
-          name: WeasyPrint test results
+          name: WeasyPrint Layer Build
+          path: build
+      - name: Upload Test PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: WeasyPrint Test Results
           path: output
       - name: Create WeasyPrint Release
-        id: create_weasyprint_release
         if: startsWith(github.ref, 'refs/tags/weasyprint-')
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@4634c16e79c963813287e889244c50009e7f0981
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release WeasyPrint layer
-      - name: Upload WeasyPrint Layer
-        if: startsWith(github.ref, 'refs/tags/weasyprint-')
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ./build/weasyprint-layer-python3.12.zip
+            ./build/weasyprint-layer-python3.12-no-fonts.zip
+
+  ghostscript-build:
+    name: Build GhostScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Layer
+        run: |
+          make build/ghostscript-layer.zip
+          rm -rf build/opt
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ steps.create_weasyprint_release.outputs.upload_url }}
-          asset_path: ./build/weasyprint-layer-python3.12.zip
-          asset_name: weasyprint-layer-python3.12.zip
-          asset_content_type: application/zip
+          name: GhostScript Layer Build
+          path: build
+      - name: Create GhostScript Release
+        if: startsWith(github.ref, 'refs/tags/ghostscript-')
+        uses: softprops/action-gh-release@4634c16e79c963813287e889244c50009e7f0981
+        with:
+          files: ./build/build/ghostscript-layer.zip

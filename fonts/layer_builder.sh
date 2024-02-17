@@ -13,15 +13,9 @@ dnf download dejavu-sans-mono-fonts
 rpmdev-extract -- *rpm
 
 mkdir /opt/fonts
+# dnf download urw-base35-nimbus-roman-fonts
+# find /tmp/*/usr/share/fonts -name '*.afm' -delete -o -name '*.t1' -delete
 cp -P -r /tmp/*/usr/share/fonts/* /opt/fonts
-
-if [ "$INSTALL_MS_FONTS" = "yes" ]; then
-    PYTHON=python2 amazon-linux-extras install epel -y
-    yum install -y fontconfig xorg-x11-font-utils cabextract
-    curl -L -O https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
-    rpm -i msttcore-fonts-installer-2.6-1.noarch.rpm
-    cp -P -r /usr/share/fonts/msttcore /opt/fonts/
-fi
 
 cat > /opt/fonts/fonts.conf <<EOF
 <?xml version="1.0" ?>

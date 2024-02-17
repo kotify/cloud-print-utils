@@ -14,10 +14,10 @@ build/weasyprint-layer-python$(RUNTIME).zip: weasyprint/layer_builder.sh \
 	    -v `pwd`/weasyprint:/out \
 			--entrypoint "/out/layer_builder.sh" \
 	    -t public.ecr.aws/lambda/python:${RUNTIME} 
-	mv -f ./weasyprint/layer.zip ./build/weasyprint-no-fonts-layer.zip
+	mv -f ./weasyprint/layer.zip ./build/weasyprint-layer-python${RUNTIME}-no-fonts.zip
 	cd build && rm -rf ./opt && mkdir opt \
 	    && unzip fonts-layer.zip -d opt \
-	    && unzip weasyprint-no-fonts-layer.zip -d opt \
+	    && unzip weasyprint-layer-python${RUNTIME}-no-fonts.zip -d opt \
 	    && cd opt && zip -r9 ../weasyprint-layer-python${RUNTIME}.zip .
 
 build/fonts-layer.zip: fonts/layer_builder.sh | _build
@@ -26,6 +26,13 @@ build/fonts-layer.zip: fonts/layer_builder.sh | _build
 	    --entrypoint "/out/layer_builder.sh" \
 	    -t public.ecr.aws/lambda/python:${RUNTIME} 
 	mv -f ./fonts/layer.zip $@
+
+build/ghostscript-layer.zip: ghostscript/layer_builder.sh | _build
+	${DOCKER_RUN} \
+	    -v `pwd`/ghostscript:/out \
+	    --entrypoint "/out/layer_builder.sh" \
+	    -t public.ecr.aws/lambda/python:${RUNTIME} 
+	mv -f ./ghostscript/layer.zip $@
 
 stack.diff:
 	cd cdk-stacks && npm install && npm run build
