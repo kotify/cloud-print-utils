@@ -1,30 +1,38 @@
-RUNTIME ?= python3.8
+PLATFORM ?= linux/amd64
+RUNTIME ?= 3.12
 TEST_FILENAME ?= report.pdf
+DOCKER_RUN=docker run --rm --platform=${PLATFORM}
 
-.PHONY: stack.deploy.weasyprint clean test.weasyprint
+.PHONY: stack.deploy.weasyprint clean test.start.container test.print.report
 
-all: build/weasyprint-layer-$(RUNTIME).zip build/wkhtmltopdf-layer.zip
+all: build/weasyprint-layer-python$(RUNTIME).zip
 
-build/weasyprint-layer-$(RUNTIME).zip: weasyprint/layer_builder.sh \
+build/weasyprint-layer-python$(RUNTIME).zip: weasyprint/layer_builder.sh \
     build/fonts-layer.zip \
     | _build
-	docker run --rm \
+	${DOCKER_RUN} \
 	    -v `pwd`/weasyprint:/out \
-	    -t lambci/lambda:build-${RUNTIME} \
-	    bash /out/layer_builder.sh
-	mv -f ./weasyprint/layer.zip ./build/weasyprint-no-fonts-layer.zip
+			--entrypoint "/out/layer_builder.sh" \
+	    -t public.ecr.aws/lambda/python:${RUNTIME} 
+	mv -f ./weasyprint/layer.zip ./build/weasyprint-layer-python${RUNTIME}-no-fonts.zip
 	cd build && rm -rf ./opt && mkdir opt \
 	    && unzip fonts-layer.zip -d opt \
-	    && unzip weasyprint-no-fonts-layer.zip -d opt \
-	    && cd opt && zip -r9 ../weasyprint-layer-${RUNTIME}.zip .
+	    && unzip weasyprint-layer-python${RUNTIME}-no-fonts.zip -d opt \
+	    && cd opt && zip -r9 ../weasyprint-layer-python${RUNTIME}.zip .
 
 build/fonts-layer.zip: fonts/layer_builder.sh | _build
-	docker run --rm \
-	    -e INSTALL_MS_FONTS="${INSTALL_MS_FONTS}" \
+	${DOCKER_RUN} \
 	    -v `pwd`/fonts:/out \
-	    -t lambci/lambda:build-${RUNTIME} \
-	    bash /out/layer_builder.sh
+	    --entrypoint "/out/layer_builder.sh" \
+	    -t public.ecr.aws/lambda/python:${RUNTIME} 
 	mv -f ./fonts/layer.zip $@
+
+build/ghostscript-layer.zip: ghostscript/layer_builder.sh | _build
+	${DOCKER_RUN} \
+	    -v `pwd`/ghostscript:/out \
+	    --entrypoint "/out/layer_builder.sh" \
+	    -t public.ecr.aws/lambda/python:${RUNTIME} 
+	mv -f ./ghostscript/layer.zip $@
 
 stack.diff:
 	cd cdk-stacks && npm install && npm run build
@@ -34,50 +42,22 @@ stack.deploy:
 	cd cdk-stacks && npm install && npm run build
 	cdk deploy --app ./cdk-stacks/bin/app.js --stack PrintStack --parameters uploadBucketName=${BUCKET}
 
-test.weasyprint:
-	docker run --rm \
+test.start.container:
+	${DOCKER_RUN} \
 	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
 	    -e XDG_DATA_DIRS="/opt/lib" \
 	    -v `pwd`/weasyprint:/var/task \
 	    -v `pwd`/build/opt:/opt \
-	    lambci/lambda:${RUNTIME} \
-	    lambda_function.lambda_handler \
-	    '{"url": "https://kotify.github.io/cloud-print-utils/samples/report/", "filename": "${TEST_FILENAME}", "return": "base64"}' \
-	    | tail -1 | jq .body | tr -d '"' | base64 -d > ${TEST_FILENAME}
-	@echo "Check ./${TEST_FILENAME}, eg.: xdg-open ${TEST_FILENAME}"
+			-p 9000:8080 \
+			public.ecr.aws/lambda/python:${RUNTIME} \
+	    lambda_function.lambda_handler
 
-
-build/wkhtmltox-layer.zip: wkhtmltox/layer_builder.sh \
-    build/fonts-layer.zip \
-    | _build
-	docker run --rm \
-	    -v `pwd`/wkhtmltox:/out \
-	    -t lambci/lambda:build-${RUNTIME} \
-	    bash /out/layer_builder.sh
-	mv -f ./wkhtmltox/layer.zip ./build/wkhtmltox-no-fonts-layer.zip
-	cd build && rm -rf ./opt && mkdir opt \
-	    && unzip fonts-layer.zip -d opt \
-	    && unzip wkhtmltox-no-fonts-layer.zip -d opt \
-	    && cd opt && zip -r9 ../wkhtmltox-layer.zip .
-
-build/wkhtmltopdf-layer.zip: build/wkhtmltox-layer.zip
-	cp build/wkhtmltox-layer.zip $@
-	zip -d $@ "bin/wkhtmltoimage"
-
-build/wkhtmltoimage-layer.zip: build/wkhtmltox-layer.zip
-	cp build/wkhtmltox-layer.zip $@
-	zip -d $@ "bin/wkhtmltopdf"
-
-test.wkhtmltox:
-	docker run --rm \
-	    -e FONTCONFIG_PATH="/opt/fonts" \
-	    -v `pwd`/wkhtmltox:/var/task \
-	    -v `pwd`/build/opt:/opt \
-	    lambci/lambda:${RUNTIME} \
-	    lambda_function.lambda_handler \
-	    '{"args": "https://google.com", "filename": "${TEST_FILENAME}", "return": "base64"}' \
-	    | tail -1 | jq .body | tr -d '"' | base64 -d > ${TEST_FILENAME}
+test.print.report:
+	which jq
+	curl --fail -s -S -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" \
+		-d '{"return": "base64", "filename": "${TEST_FILENAME}", "url": "https://kotify.github.io/cloud-print-utils/samples/report/"}' \
+		| tail -1 | jq .body | tr -d '"' | base64 -d > ${TEST_FILENAME}
 	@echo "Check ./${TEST_FILENAME}, eg.: xdg-open ${TEST_FILENAME}"
 
 
@@ -86,7 +66,3 @@ _build:
 
 clean:
 	rm -rf ./build
-
-fonts.list:
-	docker run --rm lambci/lambda:build-${RUNTIME} \
-	    bash -c "yum search font | grep noarch | grep -v texlive"
