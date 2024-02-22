@@ -1,0 +1,20 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: |
+  The weasyprint (html->pdf) Layer.
+
+Resources:
+
+  PDFLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: weasyprintLayer
+      Description: PDF manipulation layer.
+      ContentUri: build/weasyprint-layer-python3.12.zip
+      CompatibleRuntimes:
+        - python3.12
+      CompatibleArchitectures:
+        - x86_64
+  

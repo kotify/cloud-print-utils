@@ -42,6 +42,14 @@ stack.deploy:
 	cd cdk-stacks && npm install && npm run build
 	cdk deploy --app ./cdk-stacks/bin/app.js --stack PrintStack --parameters uploadBucketName=${BUCKET}
 
+cfn.deploy: build/weasyprint-layer-python$(RUNTIME).zip
+	@echo "Deploying the weasyprint PDF Layer using SAM"
+	@sam deploy \
+		--resolve-s3 \
+		--template-file weasyprintlayer.yaml \
+		--stack-name PDFLayer \
+		--region eu-west-1
+
 test.start.container:
 	${DOCKER_RUN} \
 	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
