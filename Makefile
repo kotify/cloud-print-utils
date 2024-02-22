@@ -47,9 +47,8 @@ cfn.deploy: build/weasyprint-layer-python$(RUNTIME).zip
 	@sam deploy \
 		--resolve-s3 \
 		--template-file weasyprintlayer.yaml \
-		--stack-name PDFLayer \
-		--region eu-west-1
-
+		--stack-name PDFLayer 
+		
 test.start.container:
 	${DOCKER_RUN} \
 	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
