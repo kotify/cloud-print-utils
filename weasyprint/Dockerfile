@@ -1,7 +1,7 @@
 # Define global args
 ARG FUNCTION_DIR="/home/app/"
-ARG RUNTIME_VERSION="3.11"
-ARG DISTRO_VERSION="3.18"
+ARG RUNTIME_VERSION="3.12"
+ARG DISTRO_VERSION="3.19"
 
 # Stage 1 - bundle base image + runtime
 # Grab a fresh copy of the image and install GCC
@@ -20,20 +20,21 @@ RUN apk add --no-cache \
     automake \
     elfutils-dev \
     make \
-    cmake 
+    cmake \
+    libffi-dev
 # Include global args in this stage of the build
 ARG FUNCTION_DIR
 ARG RUNTIME_VERSION
 # Create function directory
 RUN mkdir -p ${FUNCTION_DIR}
-# Copy handler function
-COPY lambda_function.py ${FUNCTION_DIR}
 
 # Install Lambda Runtime Interface Client for Python
 RUN python${RUNTIME_VERSION} -m pip install awslambdaric --target ${FUNCTION_DIR}
 
-RUN apk add --no-cache libffi-dev
 RUN python${RUNTIME_VERSION} -m pip install weasyprint boto3 --target ${FUNCTION_DIR}
+
+# Copy handler function
+COPY lambda_function.py ${FUNCTION_DIR}
 
 # Stage 3 - final runtime image
 # Grab a fresh copy of the Python image
@@ -48,6 +49,9 @@ COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 RUN apk add --no-cache pango zlib-dev jpeg-dev openjpeg-dev libffi-dev
 RUN apk add --no-cache msttcorefonts-installer && update-ms-fonts
 RUN fc-cache --really-force --verbose
+## uncomment for post processing support
+# RUN apk add --no-cache ghostscript
+
 # (Optional) Add Lambda Runtime Interface Emulator and use a script in the ENTRYPOINT for simpler local runs
 # ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie /usr/bin/aws-lambda-rie
 # COPY entry.sh /
