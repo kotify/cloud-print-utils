@@ -42,7 +42,7 @@ stack.deploy:
 	cd cdk-stacks && npm install && npm run build
 	cdk deploy --app ./cdk-stacks/bin/app.js --stack PrintStack --parameters uploadBucketName=${BUCKET}
 
-test.start.container:
+test.start.container: build/weasyprint-layer-python$(RUNTIME).zip
 	${DOCKER_RUN} \
 	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
