@@ -32,6 +32,9 @@ rpmdev-extract -- *rpm
 
 mkdir /opt/lib
 cp -P -r /tmp/*/usr/lib64/* /opt/lib
+for f in $(find /tmp  -type f  -name 'lib*.so*'); do 
+  cp "$f" /opt/lib/$(python -c "import re; print(re.match(r'^(.*.so.\d+).*$', '$(basename $f)').groups()[0])"); 
+done
 # pixbuf need list loaders cache
 # https://developer.gnome.org/gdk-pixbuf/stable/gdk-pixbuf-query-loaders.html
 PIXBUF_BIN=$(find /tmp -name gdk-pixbuf-query-loaders-64)
