@@ -4,10 +4,18 @@
 
 Build layer:
 
+    # dependencies - ensure your environment has unzip, zip, and jq
+
     $ make build/weasyprint-layer-python3.12.zip
 
     # to test your build run
-    $ make test.weasyprint
+    $ make test.start.container
+    # a timestamp followed by "exec '/var/runtime/bootstrap'" should appear
+    # `docker ps` should show a running container
+
+    # in a new shell, run
+    $ make test.print.report
+    # a report.pdf file will generate to the current directory
 
 Deploy layer:
 
