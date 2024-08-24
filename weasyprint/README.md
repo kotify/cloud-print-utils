@@ -11,7 +11,7 @@ Build layer:
     # to test your build run
     $ make test.start.container
     # a timestamp followed by "exec '/var/runtime/bootstrap'" should appear
-    # `docker ps` should show a running container
+    # docker ps should show a running container
 
     # in a new shell, run
     $ make test.print.report
