@@ -30,6 +30,8 @@ Lambda must be configured with these env vars:
     FONTCONFIG_PATH="/opt/fonts"
     XDG_DATA_DIRS="/opt/lib"
 
+If you are using the release zip files ensure your Lambda instruction set architecture is set to `x86_64` and not `arm64`.
+
 ## Docker Lambda
 
 Build layer:
