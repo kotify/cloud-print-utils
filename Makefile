@@ -1,7 +1,7 @@
 PLATFORM ?= linux/amd64
 RUNTIME ?= 3.12
 TEST_FILENAME ?= report.pdf
-DOCKER_RUN=docker run --rm --platform=${PLATFORM}
+DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME}
 
 .PHONY: stack.deploy.weasyprint clean test.start.container test.print.report
 

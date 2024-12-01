@@ -17,6 +17,7 @@ Build layer:
     $ make test.print.report
     # a report.pdf file will generate to the current directory
 
+
 Deploy layer:
 
     $ aws lambda publish-layer-version \
@@ -31,6 +32,11 @@ Lambda must be configured with these env vars:
     XDG_DATA_DIRS="/opt/lib"
 
 If you are using the release zip files ensure your Lambda instruction set architecture is set to `x86_64` and not `arm64`.
+
+
+To build a layer for python 3.13 use:
+
+    RUNTIME=3.13 make build/weasyprint-layer-python3.13.zip
 
 ## Docker Lambda
 
