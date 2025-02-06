@@ -1,30 +1,31 @@
-PLATFORM ?= linux/arm64
+PLATFORM ?= linux/amd64
 RUNTIME ?= 3.12
+ARCH ?= x86_64
 TEST_FILENAME ?= report.pdf
 DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME}
 
 .PHONY: stack.deploy.weasyprint clean test.start.container test.print.report
 
-all: build/weasyprint-layer-python$(RUNTIME).zip
+all: build/weasyprint-layer-python$(RUNTIME)$(ARCH).zip
 
-build/weasyprint-layer-python$(RUNTIME).zip: weasyprint/layer_builder.sh \
+build/weasyprint-layer-python$(RUNTIME)$(ARCH).zip: weasyprint/layer_builder.sh \
     build/fonts-layer.zip \
     | _build
 	${DOCKER_RUN} \
 	    -v `pwd`/weasyprint:/out \
 			--entrypoint "/out/layer_builder.sh" \
-	    -t public.ecr.aws/lambda/python:${RUNTIME}-arm64 
-	mv -f ./weasyprint/layer.zip ./build/weasyprint-layer-python${RUNTIME}-no-fonts.zip
+	    -t public.ecr.aws/lambda/python:${RUNTIME} 
+	mv -f ./weasyprint/layer.zip ./build/weasyprint-layer-python${RUNTIME}${ARCH}-no-fonts.zip
 	cd build && rm -rf ./opt && mkdir opt \
 	    && unzip fonts-layer.zip -d opt \
-	    && unzip weasyprint-layer-python${RUNTIME}-no-fonts.zip -d opt \
-	    && cd opt && zip -r9 ../weasyprint-layer-python${RUNTIME}.zip .
+	    && unzip weasyprint-layer-python${RUNTIME}${ARCH}-no-fonts.zip -d opt \
+	    && cd opt && zip -r9 ../weasyprint-layer-python${RUNTIME}${ARCH}.zip .
 
 build/fonts-layer.zip: fonts/layer_builder.sh | _build
 	${DOCKER_RUN} \
 	    -v `pwd`/fonts:/out \
 	    --entrypoint "/out/layer_builder.sh" \
-	    -t public.ecr.aws/lambda/python:${RUNTIME}-arm64 
+	    -t public.ecr.aws/lambda/python:${RUNTIME} 
 	mv -f ./fonts/layer.zip $@
 
 build/ghostscript-layer.zip: ghostscript/layer_builder.sh | _build
@@ -42,11 +43,10 @@ stack.deploy:
 	cd cdk-stacks && npm install && npm run build
 	cdk deploy --app ./cdk-stacks/bin/app.js --stack PrintStack --parameters uploadBucketName=${BUCKET}
 
-test.start.container: build/weasyprint-layer-python$(RUNTIME).zip
+test.start.container: build/weasyprint-layer-python$(RUNTIME)$(ARCH).zip
 	${DOCKER_RUN} \
-	    -e GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache" \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
-	    -e XDG_DATA_DIRS="/opt/lib" \
+	    -e LD_LIBRARY_PATH="/opt/lib" \
 	    -v `pwd`/weasyprint:/var/task \
 	    -v `pwd`/build/opt:/opt \
 			-p 9000:8080 \
