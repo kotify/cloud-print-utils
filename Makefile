@@ -24,7 +24,7 @@ build/fonts-layer.zip: fonts/layer_builder.sh | _build
 	${DOCKER_RUN} \
 	    -v `pwd`/fonts:/out \
 	    --entrypoint "/out/layer_builder.sh" \
-	    -t public.ecr.aws/lambda/python:${RUNTIME} 
+	    -t public.ecr.aws/lambda/python:${RUNTIME}-arm64 
 	mv -f ./fonts/layer.zip $@
 
 build/ghostscript-layer.zip: ghostscript/layer_builder.sh | _build
