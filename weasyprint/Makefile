@@ -1,8 +1,10 @@
-PLATFORM ?= linux/arm64
-ifeq ($(PLATFORM), linux/arm64)
+ARCH ?= x86_64
+ifeq ($(ARCH), arm64)
  RIE_BIN=aws-lambda-rie-arm64
+ PLATFORM=linux/arm64
 else
  RIE_BIN=aws-lambda-rie
+ PLATFORM=linux/amd64
 endif
 
 ${RIE_BIN}/aws-lambda-rie:
