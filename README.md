@@ -49,7 +49,7 @@ Lambda must be configured with these env vars:
     LD_LIBRARY_PATH="/opt/lib"
     FONTCONFIG_PATH="/opt/fonts"
 
-arm64 is also supported! Use the arm64 zip under Releases or build using "make build/weasyprint-layer-python3.12-arm64.zip"
+arm64 is also supported! Use the arm64 zip under Releases or build using "ARCH=arm64 make build/weasyprint-layer-python3.12-arm64.zip"
 
 To build a layer for python3.13 runime use:
 
