@@ -6,7 +6,7 @@ DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME}
 
 .PHONY: stack.deploy.weasyprint clean test.start.container test.print.report
 
-all: build/weasyprint-layer-python$(RUNTIME)$(ARCH).zip
+all: build/weasyprint-layer-python$(RUNTIME)-$(ARCH).zip
 
 build/weasyprint-layer-python$(RUNTIME)-$(ARCH).zip: weasyprint/layer_builder.sh \
     build/fonts-layer.zip \
@@ -15,11 +15,11 @@ build/weasyprint-layer-python$(RUNTIME)-$(ARCH).zip: weasyprint/layer_builder.sh
 	    -v `pwd`/weasyprint:/out \
 			--entrypoint "/out/layer_builder.sh" \
 	    -t public.ecr.aws/lambda/python:${RUNTIME} 
-	mv -f ./weasyprint/layer.zip ./build/weasyprint-layer-python${RUNTIME}${ARCH}-no-fonts.zip
+	mv -f ./weasyprint/layer.zip ./build/weasyprint-layer-python${RUNTIME}-${ARCH}-no-fonts.zip
 	cd build && rm -rf ./opt && mkdir opt \
 	    && unzip fonts-layer.zip -d opt \
 	    && unzip weasyprint-layer-python${RUNTIME}${ARCH}-no-fonts.zip -d opt \
-	    && cd opt && zip -r9 ../weasyprint-layer-python${RUNTIME}${ARCH}.zip .
+	    && cd opt && zip -r9 ../weasyprint-layer-python${RUNTIME}-${ARCH}.zip .
 
 build/fonts-layer.zip: fonts/layer_builder.sh | _build
 	${DOCKER_RUN} \
