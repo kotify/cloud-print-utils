@@ -1,4 +1,4 @@
-PLATFORM ?= linux/amd64
+PLATFORM ?= linux/arm64
 ifeq ($(PLATFORM), linux/arm64)
  RIE_BIN=aws-lambda-rie-arm64
 else
