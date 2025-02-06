@@ -13,7 +13,7 @@ build/weasyprint-layer-python$(RUNTIME).zip: weasyprint/layer_builder.sh \
 	${DOCKER_RUN} \
 	    -v `pwd`/weasyprint:/out \
 			--entrypoint "/out/layer_builder.sh" \
-	    -t public.ecr.aws/lambda/python:${RUNTIME} 
+	    -t public.ecr.aws/lambda/python:${RUNTIME}-arm64 
 	mv -f ./weasyprint/layer.zip ./build/weasyprint-layer-python${RUNTIME}-no-fonts.zip
 	cd build && rm -rf ./opt && mkdir opt \
 	    && unzip fonts-layer.zip -d opt \
