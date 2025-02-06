@@ -46,9 +46,8 @@ Deploy layer:
 
 Lambda must be configured with these env vars:
 
-    GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache"
+    LD_LIBRARY_PATH="/opt/lib"
     FONTCONFIG_PATH="/opt/fonts"
-    XDG_DATA_DIRS="/opt/lib"
 
 arm64 is also supported! Use the arm64 zip under Releases or build using "make build/weasyprint-layer-python3.12-arm64.zip"
 
