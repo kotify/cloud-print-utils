@@ -1,8 +1,13 @@
-PLATFORM ?= linux/amd64
 RUNTIME ?= 3.12
 ARCH ?= x86_64
 TEST_FILENAME ?= report.pdf
 DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME}
+
+ifeq ($(ARCH), arm64)
+ PLATFORM=linux/arm64
+else
+ PLATFORM=linux/amd64
+endif
 
 .PHONY: stack.deploy.weasyprint clean test.start.container test.print.report
 
