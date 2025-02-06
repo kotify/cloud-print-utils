@@ -8,7 +8,7 @@ DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME}
 
 all: build/weasyprint-layer-python$(RUNTIME)$(ARCH).zip
 
-build/weasyprint-layer-python$(RUNTIME)$(ARCH).zip: weasyprint/layer_builder.sh \
+build/weasyprint-layer-python$(RUNTIME)-$(ARCH).zip: weasyprint/layer_builder.sh \
     build/fonts-layer.zip \
     | _build
 	${DOCKER_RUN} \
@@ -43,7 +43,7 @@ stack.deploy:
 	cd cdk-stacks && npm install && npm run build
 	cdk deploy --app ./cdk-stacks/bin/app.js --stack PrintStack --parameters uploadBucketName=${BUCKET}
 
-test.start.container: build/weasyprint-layer-python$(RUNTIME)$(ARCH).zip
+test.start.container: build/weasyprint-layer-python$(RUNTIME)-$(ARCH).zip
 	${DOCKER_RUN} \
 	    -e FONTCONFIG_PATH="/opt/fonts" \
 	    -e LD_LIBRARY_PATH="/opt/lib" \
