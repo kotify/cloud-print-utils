@@ -28,7 +28,7 @@ jobs:
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
-          name: WeasyPrint Layer Build ${{ matrix.version }}
+          name: WeasyPrint Layer Build ${{ matrix.version }} arm64
           path: build
   weasyprint-build-x86_64:
     name: Build WeasyPrint x86_64
@@ -56,7 +56,7 @@ jobs:
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
-          name: WeasyPrint Layer Build ${{ matrix.version }}
+          name: WeasyPrint Layer Build ${{ matrix.version }} x86_64
           path: build
   weasyprint-release:
     name: Release WeasyPrint
