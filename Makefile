@@ -1,4 +1,4 @@
-PLATFORM ?= linux/amd64
+PLATFORM ?= linux/arm64
 RUNTIME ?= 3.12
 TEST_FILENAME ?= report.pdf
 DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME}
