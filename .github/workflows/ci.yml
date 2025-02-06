@@ -4,16 +4,18 @@ on: push
 jobs:
   weasyprint-build:
     name: Build WeasyPrint
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         version: ["3.12", "3.13"]
+        arch: ["x86_64", "arm64"]
+    runs-on: ${{ matrix.arch == 'x86_64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     env:
       RUNTIME: ${{ matrix.version }}
+      ARCH: ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v4
       - name: Build Layer 
-        run: make build/weasyprint-layer-python${{ matrix.version }}.zip
+        run: make build/weasyprint-layer-python${{ matrix.version }}-${{ matrix.arch }}.zip
       - name: Test weasyprint
         run: |
           mkdir output
@@ -22,11 +24,11 @@ jobs:
           make test.print.report
           rm -rf build/opt
         env:
-          TEST_FILENAME: build/test-report-${{ matrix.version }}.pdf 
+          TEST_FILENAME: build/test-report-${{ matrix.version }}-${{ matrix.arch }}.pdf 
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
-          name: WeasyPrint Layer Build ${{ matrix.version }}
+          name: WeasyPrint Layer Build ${{ matrix.version }} ${{ matrix.arch }}
           path: build
   weasyprint-release:
     name: Release WeasyPrint

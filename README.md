@@ -3,7 +3,7 @@
 This is a collection of AWS Lambda layers and functions to render pdf documents and images from HTML.
 
 Download layers from release section or build them yourself (requires: make, docker, zip, unzip, jq).
-The layers support only Amazon Linux 2023 runtimes, eg. python3.12.
+The layers support only Amazon Linux 2023 runtimes, eg. python3.12 and python3.13.
 
 ## Fonts
 
@@ -24,7 +24,7 @@ Run `make build/ghostscript-layer.zip` to build the layer.
 
 Build the layer with:
 
-    $ make build/weasyprint-layer-python3.12.zip
+    $ make build/weasyprint-layer-python3.12-x86_64.zip
 
 To test your build:
 
@@ -42,19 +42,18 @@ Deploy layer:
     $ aws lambda publish-layer-version \
         --region <region> \
         --layer-name <name> \
-        --zip-file fileb://build/weasyprint-layer-python3.12.zip
+        --zip-file fileb://build/weasyprint-layer-python3.12-x86_64.zip
 
 Lambda must be configured with these env vars:
 
-    GDK_PIXBUF_MODULE_FILE="/opt/lib/loaders.cache"
+    LD_LIBRARY_PATH="/opt/lib"
     FONTCONFIG_PATH="/opt/fonts"
-    XDG_DATA_DIRS="/opt/lib"
 
-If you are using the release zip files ensure your Lambda instruction set architecture is set to `x86_64` and not `arm64`.
+arm64 is also supported! Use the arm64 zip under Releases or build using "ARCH=arm64 make build/weasyprint-layer-python3.12-arm64.zip"
 
 To build a layer for python3.13 runime use:
 
-    RUNTIME=3.13 make build/weasyprint-layer-python3.13.zip
+    RUNTIME=3.13 make build/weasyprint-layer-python3.13-x86_64.zip
 
 ### Docker Lambda
 
