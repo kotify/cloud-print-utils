@@ -1,7 +1,8 @@
 RUNTIME ?= 3.12
 ARCH ?= x86_64
 TEST_FILENAME ?= report.pdf
-DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME}
+WEASYPRINT_VERSION ?=
+DOCKER_RUN=docker run --rm --platform=${PLATFORM} -e RUNTIME_VERSION=${RUNTIME} -e WEASYPRINT_VERSION=${WEASYPRINT_VERSION}
 
 ifeq ($(ARCH), arm64)
  PLATFORM=linux/arm64

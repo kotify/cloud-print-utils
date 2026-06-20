@@ -45,7 +45,13 @@ $PIXBUF_BIN > /opt/lib/loaders.cache
 RUNTIME=$(grep AWS_EXECUTION_ENV "$LAMBDA_RUNTIME_DIR/bootstrap" | cut -d _ -f 5)
 export RUNTIME
 mkdir -p "/opt/python/lib/$RUNTIME/site-packages"
-python -m pip install "weasyprint" -t "/opt/python/lib/$RUNTIME/site-packages"
+# Pin the WeasyPrint version when WEASYPRINT_VERSION is set; otherwise install latest.
+if [ -n "$WEASYPRINT_VERSION" ]; then
+  WEASYPRINT_SPEC="weasyprint==$WEASYPRINT_VERSION"
+else
+  WEASYPRINT_SPEC="weasyprint"
+fi
+python -m pip install "$WEASYPRINT_SPEC" -t "/opt/python/lib/$RUNTIME/site-packages"
 
 cd /opt
 zip -r9 /out/layer.zip lib/* python/*
