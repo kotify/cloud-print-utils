@@ -14,8 +14,13 @@ jobs:
       ARCH: ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v4
-      - name: Build Layer 
-        run: make build/weasyprint-layer-python${{ matrix.version }}-${{ matrix.arch }}.zip
+      - name: Build Layer
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/weasyprint-* ]]; then
+            export WEASYPRINT_VERSION="${GITHUB_REF#refs/tags/weasyprint-}"
+            echo "Pinning WeasyPrint to $WEASYPRINT_VERSION"
+          fi
+          make build/weasyprint-layer-python${{ matrix.version }}-${{ matrix.arch }}.zip
       - name: Test weasyprint
         run: |
           mkdir output
@@ -52,6 +57,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build Layer
         run: |
+          if [[ "$GITHUB_REF" == refs/tags/ghostscript-* ]]; then
+            export GHOSTSCRIPT_VERSION="${GITHUB_REF#refs/tags/ghostscript-}"
+            echo "Pinning Ghostscript to $GHOSTSCRIPT_VERSION"
+          fi
           make build/ghostscript-layer.zip
           rm -rf build/opt
       - name: Upload Build

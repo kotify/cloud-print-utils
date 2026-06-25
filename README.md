@@ -16,6 +16,11 @@ By default only dejavu fonts are installed, edit [build script](fonts/layer_buil
 
 Run `make build/ghostscript-layer.zip` to build the layer.
 
+By default a fixed Ghostscript version (set in the [build script](ghostscript/layer_builder.sh))
+is built. To build a different version, set `GHOSTSCRIPT_VERSION`:
+
+    GHOSTSCRIPT_VERSION=10.06.0 make build/ghostscript-layer.zip
+
 ## WeasyPrint
 
 [WeasyPrint](https://weasyprint.org/) is python based pdf print service.
@@ -55,6 +60,11 @@ To build a layer for python3.13 or python3.14 runtime use:
 
     RUNTIME=3.13 make build/weasyprint-layer-python3.13-x86_64.zip
     RUNTIME=3.14 make build/weasyprint-layer-python3.14-x86_64.zip
+
+By default the latest WeasyPrint is installed. To pin a specific version, set
+`WEASYPRINT_VERSION`:
+
+    WEASYPRINT_VERSION=69.0 make build/weasyprint-layer-python3.12-x86_64.zip
 
 ### Docker Lambda
 

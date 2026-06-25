@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
-export VERSION="10.06.0"
+# Pin the Ghostscript version when GHOSTSCRIPT_VERSION is set; otherwise use the default.
+export VERSION="${GHOSTSCRIPT_VERSION:-10.07.1}"
 
 dnf install -y gcc tar
 cd /tmp/
